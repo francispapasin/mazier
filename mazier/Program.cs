@@ -1,3 +1,5 @@
+using mazier.View;
+
 namespace mazier
 {
     internal static class Program

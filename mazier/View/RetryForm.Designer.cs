@@ -1,6 +1,7 @@
-﻿namespace mazier
+﻿
+namespace mazier.View
 {
-    partial class StartForm
+    partial class RetryForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,52 +29,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Start = new Button();
+            Play_Again = new Button();
             button2 = new Button();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
-            // Start
+            // Play_Again
             // 
-            Start.FlatStyle = FlatStyle.Popup;
-            Start.Location = new Point(312, 340);
-            Start.Name = "Start";
-            Start.Size = new Size(234, 46);
-            Start.TabIndex = 0;
-            Start.Text = "Start Game";
-            Start.UseVisualStyleBackColor = true;
-            Start.Click += Start_Click;
+            Play_Again.Location = new Point(219, 326);
+            Play_Again.Name = "Play_Again";
+            Play_Again.Size = new Size(153, 65);
+            Play_Again.TabIndex = 0;
+            Play_Again.Text = "Play Again";
+            Play_Again.UseVisualStyleBackColor = true;
+            Play_Again.Click += Play_Again_Click;
             // 
             // button2
             // 
-            button2.FlatStyle = FlatStyle.Popup;
-            button2.Location = new Point(312, 392);
+            button2.Location = new Point(436, 326);
             button2.Name = "button2";
-            button2.Size = new Size(234, 46);
+            button2.Size = new Size(153, 65);
             button2.TabIndex = 1;
             button2.Text = "Quit";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
-            // StartForm
+            // RetryForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.game;
+            BackgroundImage = Properties.Resources.lost;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(800, 450);
             Controls.Add(button2);
-            Controls.Add(Start);
-            ForeColor = SystemColors.ControlText;
+            Controls.Add(Play_Again);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "StartForm";
+            Name = "RetryForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "StartForm";
+            Text = "GameLost";
             ResumeLayout(false);
+        }
+
+        private void Play_Again_Click(object sender, EventArgs e)
+        {
+            GameForm gameForm = new GameForm(); // Create a new instance of the GameForm class
+            gameForm.Show(); // Show the game form
+            this.Hide(); // Close the application
         }
 
         #endregion
 
-        private Button Start;
+        private Button Play_Again;
         private Button button2;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

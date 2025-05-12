@@ -1,27 +1,29 @@
 ﻿using mazier.Model;
 using mazier.View;
-// Ensure the 'View' namespace exists and is correctly referenced
-using System.Windows.Forms;
-using Timer = System.Windows.Forms.Timer; // Ensure this is included for Timer
 
 namespace mazier.Presenter
 {
     public class GamePresenter
     {
+
         private readonly GameFactory _factory;
         private readonly GameForm _view;
+
 
         private Player _player;
         private List<Enemy> _enemies;
         private List<Wall> _walls;
         private List<Door> _doors;
-
+        private List<Cloud> _clouds; // Add a list for clouds
+        private bool _isRetryShown = false; // Track if the ScaryForm is already shown
         private bool _hasWon = false; // Track if the player has already won
         private bool _isScaryFormShown = false; // Track if the ScaryForm is already shown
-        private bool _ApplicationClosed = false; // Track if the application is closed
+        private GameForm2 gameForm2;
+        private bool _isRetryFormShown = false;
 
         public GamePresenter(GameForm view)
         {
+
             _view = view;
             _factory = new GameFactory();
             _player = null!; // Initialize to a non-null value to satisfy the compiler
@@ -30,6 +32,7 @@ namespace mazier.Presenter
             _doors = new List<Door>(); // Initialize to an empty list
             InitializeGame();
         }
+
 
         private void InitializeGame()
         {
@@ -47,6 +50,7 @@ namespace mazier.Presenter
                 _factory.CreateEnemy(_view.Monster6_pictureBox),
                 _factory.CreateEnemy(_view.Monster7_pictureBox)
             };
+
 
             // Create Walls
             _walls = new List<Wall>
@@ -71,8 +75,8 @@ namespace mazier.Presenter
                 _factory.CreateWall(_view.panel18),
                 _factory.CreateWall(_view.panel19),
                 _factory.CreateWall(_view.panel20),
-                   
-                
+                _factory.CreateWall(_view.panel21),
+                _factory.CreateWall(_view.panel22), 
                 // Add all 20 walls
             };
 
@@ -84,11 +88,20 @@ namespace mazier.Presenter
                 _factory.CreateDoor(_view.Door3_pictureBox),
                 _factory.CreateDoor(_view.Door4_pictureBox)
             };
+
+            // Create Clouds
+            _clouds = new List<Cloud>
+            {
+                _factory.CreateCloud(_view.cloud1),
+                _factory.CreateCloud(_view.cloud2),
+                _factory.CreateCloud(_view.cloud3)
+            };
         }
 
         public void HandleKeyPress(Keys key)
         {
             _player.Move(key, _walls);
+
         }
 
         public void UpdateGame()
@@ -96,6 +109,16 @@ namespace mazier.Presenter
             foreach (var enemy in _enemies)
             {
                 enemy.Move(_walls);
+            }
+
+            // Restrict cloud movement collision to panel1 and panel2 only
+            var restrictedCloudWalls = _walls
+                .Where(w => w.WallPanel == _view.panel1 || w.WallPanel == _view.panel2)
+                .ToList();
+
+            foreach (var cloud in _clouds)
+            {
+                cloud.Move(restrictedCloudWalls);
             }
 
             CheckCollisions();
@@ -106,12 +129,29 @@ namespace mazier.Presenter
             // Check if player touches an enemy
             foreach (var enemy in _enemies)
             {
-                if (_player.PlayerPictureBox.Bounds.IntersectsWith(enemy.EnemyPictureBox.Bounds) && !_isScaryFormShown)
+               
+
+                if (_player.PlayerPictureBox.Bounds.IntersectsWith(enemy.EnemyPictureBox.Bounds) && !_isRetryShown)
                 {
-                    _isScaryFormShown = true; // Set the flag to true
-                    ShowScaryForm();
-                    Application.Exit();
+                    _player.TakeDamage();
+                    _view.UpdateHealth(_player.Health);
+                   
+
+                    if (_player.Health <= 0)
+                    {
+                        _isRetryShown = true;
+                        ShowRetryForm();
+                      
+                    }
+                    else
+                    {
+                        ResetPlayerToStart();
+                        
+                    }
+
+
                     break;
+                   
                 }
             }
 
@@ -124,26 +164,44 @@ namespace mazier.Presenter
                     {
                         _hasWon = true; // Set the flag to true
                         ShowVictory();
+                        break;
                     }
                     else if (!_isScaryFormShown) // Dangerous doors
                     {
                         _isScaryFormShown = false; // Set the flag to true
                         ShowScaryForm();
+                        break;
                     }
                 }
             }
         }
 
+        private void ResetPlayerToStart()
+        {
+            Point startingPoint = new Point(725, 191); // Replace with your actual player start position
+            _player.PlayerPictureBox.Location = startingPoint;
+
+
+        }
+
         private void ShowScaryForm()
         {
             _view.ShowScaryForm();
-            _isScaryFormShown = false; // Reset the flag after the form is closed
+            _isScaryFormShown = true; // Reset the flag after the form is closed
+            Application.Exit();
         }
 
         private void ShowVictory()
         {
             _view.ShowVictoryForm();
             _hasWon = false; // Reset the flag if needed for replayability
+            // Exit the application after showing the victory form
         }
+        private void ShowRetryForm()
+        {
+            _view.ShowRetryForm(); // This now shows the new form and closes the current one
+            _isRetryFormShown = true;
+        }
+
     }
 }

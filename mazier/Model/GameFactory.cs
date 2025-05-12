@@ -27,5 +27,10 @@ namespace mazier.Model
         }
 
         public Wall CreateWall(Panel wall) => new Wall(wall);
+
+        public Cloud CreateCloud(PictureBox pictureBox)
+        {
+            return new Cloud(pictureBox);
+        }
     }
 }

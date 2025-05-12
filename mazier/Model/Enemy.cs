@@ -9,7 +9,7 @@ namespace mazier.Model
     public class Enemy
     {
         public PictureBox EnemyPictureBox { get; set; }
-        public int Speed { get; set; } = 5;
+        public int Speed { get; set; } = 3;
 
         public Enemy(PictureBox pictureBox)
         {

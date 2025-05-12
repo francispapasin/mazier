@@ -12,10 +12,22 @@ namespace mazier.Model
     {
         public PictureBox PlayerPictureBox { get; set; }
         public int Speed { get; set; } = 10;
+        public int Health { get; private set; } = 3; // Default to 3 hits
+
+
 
         public Player(PictureBox pictureBox)
         {
             PlayerPictureBox = pictureBox;
+        }
+        public void TakeDamage()
+        {
+            Health--;
+        }
+
+        public void ResetHealth()
+        {
+            Health = 3;
         }
 
         public void Move(Keys direction, List<Wall> walls)
@@ -51,3 +63,4 @@ namespace mazier.Model
         }
     }
 }
+
